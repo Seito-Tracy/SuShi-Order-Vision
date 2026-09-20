@@ -6,40 +6,25 @@ import '../../models/sushi_models.dart';
 import '../../widgets/conveyor_panel.dart';
 import '../../widgets/order_panel.dart';
 import '../../widgets/video_background.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../providers/order_slots_provider.dart';
+import '../../providers/side_panel_provider.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  final _leftSlots = List<MenuItem?>.filled(4, null);
-  final _rightSlots = List<MenuItem?>.filled(4, null);
-  bool _leftPanelOpen = false;
-  bool _rightPanelOpen = false;
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  void _openPanel(bool isLeft) =>
+      ref.read(sidePanelProvider(isLeft).notifier).open();
 
-  void _openPanel(bool isLeft) => setState(() {
-    if (isLeft) {
-      _leftPanelOpen = true;
-    } else {
-      _rightPanelOpen = true;
-    }
-  });
+  void _closePanel(bool isLeft) =>
+      ref.read(sidePanelProvider(isLeft).notifier).close();
 
-  void _closePanel(bool isLeft) => setState(() {
-    if (isLeft) {
-      _leftPanelOpen = false;
-    } else {
-      _rightPanelOpen = false;
-    }
-  });
-
-  void _panelAdd(bool isLeft, MenuItem item) {
-    final slots = isLeft ? _leftSlots : _rightSlots;
-    final idx = slots.indexOf(null);
-    if (idx >= 0) setState(() => slots[idx] = item);
-  }
+  void _panelAdd(bool isLeft, MenuItem item) =>
+      ref.read(orderSlotsProvider(isLeft).notifier).addItem(item);
 
   @override
   void initState() {
@@ -54,14 +39,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _onDrop(bool isLeft, int idx, MenuItem item) =>
-      setState(() => (isLeft ? _leftSlots : _rightSlots)[idx] = item);
+      ref.read(orderSlotsProvider(isLeft).notifier).drop(idx, item);
 
   void _onClear(bool isLeft, int idx) =>
-      setState(() => (isLeft ? _leftSlots : _rightSlots)[idx] = null);
+      ref.read(orderSlotsProvider(isLeft).notifier).clearSlot(idx);
 
   void _onConfirm(bool isLeft) {
-    final slots = isLeft ? _leftSlots : _rightSlots;
-    final count = slots.whereType<MenuItem>().length;
+    final notifier = ref.read(orderSlotsProvider(isLeft).notifier);
+    final count = notifier.count;
     if (count > 0) {
       showDialog(
         context: context,
@@ -76,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       );
-      setState(() => slots.fillRange(0, 4, null));
+      notifier.clearAll();
     }
   }
 
@@ -106,7 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
             height: barH,
             child: _SlotBar(
               isLeft: isLeft,
-              slots: isLeft ? _leftSlots : _rightSlots,
+              slots: ref.watch(orderSlotsProvider(isLeft)),
               slotSz: slotSz,
               btnW: btnW,
               barH: barH,
@@ -134,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildSidePanelOverlay(bool isLeft) {
-    final slots = isLeft ? _leftSlots : _rightSlots;
+    final slots = ref.watch(orderSlotsProvider(isLeft));
     return Positioned.fill(
       child: Align(
         alignment: isLeft ? Alignment.bottomLeft : Alignment.bottomRight,
@@ -173,8 +158,9 @@ class _HomeScreenState extends State<HomeScreen> {
               Expanded(flex: 55, child: _buildBeltArea()),
             ],
           ),
-          if (_leftPanelOpen) _buildSidePanelOverlay(true),
-          if (_rightPanelOpen) _buildSidePanelOverlay(false),
+          if (ref.watch(sidePanelProvider(true))) _buildSidePanelOverlay(true),
+          if (ref.watch(sidePanelProvider(false)))
+            _buildSidePanelOverlay(false),
         ],
       ),
     );
