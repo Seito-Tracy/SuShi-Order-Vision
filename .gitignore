@@ -43,3 +43,8 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+.vscode/
+screen_*.png
+sushi_dims.txt
+android/keymap_dump.json

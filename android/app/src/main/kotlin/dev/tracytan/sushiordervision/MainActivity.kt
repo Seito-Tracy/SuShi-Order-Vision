@@ -1,4 +1,4 @@
-package com.tto.tto
+package dev.tracytan.sushiordervision
 
 import io.flutter.embedding.android.FlutterActivity
 
