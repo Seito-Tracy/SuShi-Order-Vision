@@ -67,6 +67,11 @@ flutter:
     - assets/belt/
     - assets/sushi_items/
 
+  fonts:
+    - family: Oswald
+      fonts:
+        - asset: assets/fonts/Oswald-Regular.ttf
+
 flutter_launcher_icons:
   android: true
   ios: true

@@ -25,7 +25,9 @@ class ConveyorDish {
 class OrderEntry {
   final MenuItem item;
   int qty;
-  OrderEntry(this.item) : qty = 1;
+  OrderEntry(this.item, {this.qty = 1});
+
+  OrderEntry copyWith({int? qty}) => OrderEntry(item, qty: qty ?? this.qty);
 }
 
 const List<MenuItem> kMenu = [

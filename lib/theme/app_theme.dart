@@ -7,25 +7,21 @@ class AppTheme {
 
   static final ThemeData light = ThemeData(
     useMaterial3: true,
+    fontFamily: 'Oswald',
     colorScheme: ColorScheme.fromSeed(
       seedColor: _primaryColor,
       brightness: Brightness.light,
     ),
-    appBarTheme: const AppBarTheme(
-      centerTitle: true,
-      elevation: 0,
-    ),
+    appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
   );
 
   static final ThemeData dark = ThemeData(
     useMaterial3: true,
+    fontFamily: 'Oswald',
     colorScheme: ColorScheme.fromSeed(
       seedColor: _primaryColor,
       brightness: Brightness.dark,
     ),
-    appBarTheme: const AppBarTheme(
-      centerTitle: true,
-      elevation: 0,
-    ),
+    appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
   );
 }

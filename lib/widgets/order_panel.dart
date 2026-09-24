@@ -37,17 +37,6 @@ class _OrderPanelState extends State<OrderPanel> {
   }
 
   void _addItem(MenuItem item) {
-    if (widget.slots.every((s) => s != null)) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          const SnackBar(
-            content: Text('待選區已滿，請先下單或移除菜品'),
-            duration: Duration(milliseconds: 900),
-          ),
-        );
-      return;
-    }
     widget.onAdd(item);
   }
 
@@ -316,10 +305,15 @@ class _OrderPanelState extends State<OrderPanel> {
   Widget _buildSlotsColumn() {
     return Column(
       children: [
-        for (int i = 0; i < 4; i++) ...[
-          Expanded(child: _buildSlotCard(i)),
-          if (i < 3) const SizedBox(height: 10),
-        ],
+        Expanded(
+          child: ListView.separated(
+            padding: EdgeInsets.zero,
+            itemCount: widget.slots.length,
+            separatorBuilder: (_, _) => const SizedBox(height: 10),
+            itemBuilder: (ctx, i) =>
+                SizedBox(height: 72, child: _buildSlotCard(i)),
+          ),
+        ),
         const SizedBox(height: 12),
         _buildConfirmButton(),
       ],
